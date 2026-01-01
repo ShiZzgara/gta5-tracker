@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Трекер заданий GTA 5 RP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 16px;
+            background-color: #f0f2f5;
+            color: #000;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .char-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .char-tab {
+            flex: 1;
+            padding: 12px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+        .char-tab.active {
+            background-color: #007AFF;
+            color: white;
+        }
+        .screen-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+        .screen-tab {
+            flex: 1;
+            padding: 10px;
+            background-color: #d0d0d0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .screen-tab.active {
+            background-color: #007AFF;
+            color: white;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        .task-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .task-name {
+            font-weight: 500;
+        }
+        .task-count {
+            font-size: 12px;
+            color: #666;
+        }
+        .task-points {
+            font-weight: 600;
+            color: #007AFF;
+            margin-right: 10px;
+        }
+        .task-controls {
+            display: flex;
+            gap: 5px;
+        }
+        .move-btn {
+            background-color: #e0e0e0;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .reset-btn {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .timer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .timer-name {
+            font-weight: 500;
+        }
+        .timer-display {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .timer-time {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .timer-progress {
+            width: 100px;
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        .timer-progress-bar {
+            height: 100%;
+            background-color: #007AFF;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .btn-start {
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 5px;
+        }
+        .btn-reset {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .stats-container {
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .total-points {
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Задания GTA 5 RP</h1>
+</div>
+
+<div class="char-tabs">
+    <button class="char-tab active" data-char="karl">👤 Карл Урбан</button>
+    <button class="char-tab" data-char="rick">👤 Рик Стволовски</button>
+    <button class="char-tab" data-char="erik">👤 Эрик Баттербин</button>
+</div>
+
+<div class="screen-tabs">
+    <button class="screen-tab active" data-screen="tasks">Задания</button>
+    <button class="screen-tab" data-screen="timers">Таймеры</button>
+    <button class="screen-tab" data-screen="stats">Статистика</button>
+</div>
+
+<div class="status" id="status">Загрузка...</div>
+
+<!-- Экран заданий -->
+<div id="tasks" class="screen active">
+    <div class="tasks-container"></div>
+    <div class="action-buttons">
+        <button class="action-btn" onclick="resetDailyTasks()">Сбросить задания</button>
+    </div>
+</div>
+
+<!-- Экран таймеров -->
+<div id="timers" class="screen">
+    <div class="timers-container"></div>
+</div>
+
+<!-- Экран статистики -->
+<div id="stats" class="screen">
+    <div class="stats-container">
+        <div class="total-points">📊 Статистика</div>
+    </div>
+</div>
+
+<script>
+    // === КОНФИГУРАЦИЯ ===
+    const API_URL = './api/data'; // Vercel serverless function
+
+    // Исходные данные (только для отображения, данные берутся с сервера)
+    const TASKS_TEMPLATE = [
+        { id: 1, name: "Лотерея", points: 2 },
+        { id: 2, name: "Сайт", points: 2 },
+        { id: 3, name: "Бравл", points: 2 },
+        { id: 4, name: "Лайк в match", points: 2 },
+        { id: 5, name: "Кинуть мячик", points: 4, desc: "15 раз", count: true, max: 15 },
+        { id: 6, name: "Дрессировка", points: 4, count: true, max: 15 },
+        { id: 7, name: "Тир", points: 2 },
+        { id: 8, name: "Ставка в колесе", points: 6, desc: "100 фишек" },
+        { id: 9, name: "Рыбалка", points: 8, desc: "20 рыб" },
+        { id: 10, name: "Автосервис", points: 2, desc: "свою машину" },
+        { id: 11, name: "Армреслинг", points: 2 },
+        { id: 12, name: "Баскетбол", points: 2, desc: "2 мяча" },
+        { id: 13, name: "Футбол", points: 2, desc: "2 мяча" },
+        { id: 14, name: "Задания клуба", points: 8, count: true, max: 2 },
+        { id: 15, name: "Дартс", points: 2 },
+        { id: 16, name: "Волейбол", points: 2, desc: "1 минута" },
+        { id: 17, name: "Пинг-понг", points: 2, desc: "1 минута" },
+        { id: 18, name: "Теннис", points: 2, desc: "1 минута" },
+        { id: 19, name: "Сыграть в мафию", points: 6 },
+        { id: 20, name: "Платеж по лизингу", points: 2 },
+        { id: 21, name: "Гонка", points: 2, desc: "ставка 1000" },
+        { id: 22, name: "Арена", points: 2, count: true, max: 3, desc: "победа" },
+        { id: 23, name: "Стройка", points: 4, desc: "25 действий" },
+        { id: 24, name: "Порт", points: 4, desc: "25 действий" },
+        { id: 25, name: "Шахта", points: 4, desc: "25 действий" },
+        { id: 26, name: "Ферма", points: 2, desc: "10 действий" },
+        { id: 27, name: "Картинг", points: 2, desc: "победа" },
+        { id: 28, name: "Сокровище", points: 2 },
+        { id: 29, name: "Автобус", points: 4, count: true, max: 2 },
+        { id: 30, name: "Почта", points: 2, count: true, max: 10 },
+        { id: 31, name: "Нули в казино", points: 4 },
+        { id: 32, name: "Тренажерка", points: 2, desc: "20 действий" },
+        { id: 33, name: "Тренировочный комплекс", points: 2, count: true, max: 5, desc: "победы от 100$" },
+        { id: 34, name: "Шкуры", points: 4, count: true, max: 5, desc: "100 качество" },
+        { id: 35, name: "Пожарный", points: 2, count: true, max: 25 },
+        { id: 36, name: "Дальнобойщик", points: 4, count: true, max: 3 },
+        { id: 37, name: "Киностудия", points: 4 },
+        { id: 38, name: "Кинотеатр", points: 2, desc: "загрузить 5 роликов" },
+        { id: 39, name: "Метро", points: 4 },
+        { id: 40, name: "Автосервис", points: 4, desc: "машину друга" }
+    ];
+
+    const TIMERS_TEMPLATE = [
+        { name: "Дрессировка", duration: 15 * 60 },
+        { name: "Почта", duration: 10 * 60 },
+        { name: "Реднеки", duration: 2 * 60 * 60 },
+        { name: "Кармит", duration: 2 * 60 * 60 },
+        { name: "Тир", duration: 90 * 60 }
+    ];
+
+    let currentChar = 'karl';
+    let serverData = {
+        karl: { tasks: {}, timers: {} },
+        rick: { tasks: {}, timers: {} },
+        erik: { tasks: {}, timers: {} }
+    };
+
+    // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
+    async function apiCall(method, body = null) {
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ method, char: currentChar, ...body })
+        });
+        if (!res.ok) throw new Error('Ошибка сети');
+        return await res.json();
+    }
+
+    function formatTime(seconds) {
+        if (seconds < 0) seconds = 0;
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function calculatePoints(tasksState) {
+        let total = 0;
+        TASKS_TEMPLATE.forEach(task => {
+            const state = tasksState[task.id] || {};
+            if (state.completed) total += task.points;
+        });
+        return total;
+    }
+
+    // === ОБРАБОТЧИКИ ===
+    document.querySelectorAll('.char-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.char-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentChar = tab.dataset.char;
+            renderAll();
+        });
+    });
+
+    document.querySelectorAll('.screen-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.screen-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.screen).classList.add('active');
+            if (tab.dataset.screen === 'stats') renderStats();
+        });
+    });
+
+    async function toggleTask(id) {
+        const task = TASKS_TEMPLATE.find(t => t.id === id);
+        const currentState = serverData[currentChar].tasks[id] || {};
+        let newCompleted = !currentState.completed;
+        let newCount = currentState.count || 0;
+
+        if (task.count) {
+            if (!currentState.completed) {
+                newCount++;
+                if (newCount >= task.max) {
+                    newCompleted = true;
+                } else {
+                    newCompleted = false;
+                }
+            }
+        }
+
+        await apiCall('updateTask', { taskId: id, completed: newCompleted, count: newCount });
+        await loadData();
+        renderAll();
+    }
+
+    async function resetTaskProgress(id) {
+        await apiCall('updateTask', { taskId: id, completed: false, count: 0 });
+        await loadData();
+        renderAll();
+    }
+
+    async function resetDailyTasks() {
+        await apiCall('resetTasks');
+        await loadData();
+        renderAll();
+    }
+
+    async function toggleTimer(name) {
+        const timer = serverData[currentChar].timers[name];
+        if (timer && timer.active) {
+            // Остановить
+            await apiCall('stopTimer', { timerName: name });
+        } else {
+            // Запустить
+            await apiCall('startTimer', { timerName: name });
+        }
+        await loadData();
+        renderAll();
+    }
+
+    async function resetTimer(name) {
+        await apiCall('resetTimer', { timerName: name });
+        await loadData();
+        renderAll();
+    }
+
+    // === РЕНДЕР ===
+    function renderTasks() {
+        const container = document.querySelector('.tasks-container');
+        const tasksState = serverData[currentChar].tasks;
+        container.innerHTML = '';
+
+        TASKS_TEMPLATE.forEach((task, index) => {
+            const state = tasksState[task.id] || {};
+            const completed = state.completed || false;
+            const count = state.count || 0;
+
+            let countText = '';
+            if (task.count) countText = ` (${count}/${task.max})`;
+            let descText = task.desc ? ` - ${task.desc}` : '';
+
+            const el = document.createElement('div');
+            el.className = 'task-item';
+            el.innerHTML = `
+                <div class="task-left">
+                    <input type="checkbox" class="task-checkbox" ${completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <div class="task-info">
+                        <div class="task-name">${task.name}${countText}</div>
+                        ${descText ? `<div class="task-count">${descText}</div>` : ''}
+                    </div>
+                    <div class="task-points">+${task.points}</div>
+                </div>
+                <div class="task-controls">
+                    ${task.count ? `<button class="reset-btn" onclick="resetTaskProgress(${task.id})" title="Сбросить прогресс">↺</button>` : ''}
+                    <button class="move-btn" onclick="moveTask(${index}, 'up')" disabled>↑</button>
+                    <button class="move-btn" onclick="moveTask(${index}, 'down')" disabled>↓</button>
+                </div>
+            `;
+            container.appendChild(el);
+        });
+    }
+
+    function renderTimers() {
+        const container = document.querySelector('.timers-container');
+        const timersState = serverData[currentChar].timers;
+        container.innerHTML = '';
+
+        TIMERS_TEMPLATE.forEach(timerDef => {
+            const state = timersState[timerDef.name] || {};
+            const active = state.active || false;
+            const startedAt = state.startedAt || 0;
+            const now = Date.now();
+            const elapsed = startedAt ? Math.floor((now - startedAt) / 1000) : 0;
+            const remaining = Math.max(0, timerDef.duration - elapsed);
+            const progress = startedAt ? (elapsed / timerDef.duration) * 100 : 0;
+
+            const el = document.createElement('div');
+            el.className = 'timer-item';
+            el.innerHTML = `
+                <div><div class="timer-name">${timerDef.name}</div></div>
+                <div class="timer-display">
+                    <div class="timer-time">${formatTime(remaining)}</div>
+                    <div class="timer-progress">
+                        <div class="timer-progress-bar" style="width: ${Math.min(100, progress)}%"></div>
+                    </div>
+                    <button class="btn-start" onclick="toggleTimer('${timerDef.name}')">${active ? 'Стоп' : 'Старт'}</button>
+                    <button class="btn-reset" onclick="resetTimer('${timerDef.name}')">Сброс</button>
+                </div>
+            `;
+            container.appendChild(el);
+        });
+    }
+
+    function renderStats() {
+        const container = document.querySelector('.stats-container');
+        let html = '<div class="total-points">📊 Статистика</div>';
+        ['karl', 'rick', 'erik'].forEach(charId => {
+            const name = { karl: 'Карл Урбан', rick: 'Рик Стволовски', erik: 'Эрик Баттербин' }[charId];
+            const points = calculatePoints(serverData[charId].tasks);
+            html += `<div style="padding:12px 0;border-bottom:1px solid #eee;"><strong>${name}:</strong> ${points} очков</div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderAll() {
+        renderTasks();
+        renderTimers();
+        if (document.getElementById('stats').classList.contains('active')) {
+            renderStats();
+        }
+    }
+
+    // === ЗАГРУЗКА ДАННЫХ ===
+    async function loadData() {
+        try {
+            const res = await fetch(API_URL + `?char=${currentChar}`);
+            if (!res.ok) throw new Error('Ошибка загрузки');
+            serverData = await res.json();
+            document.getElementById('status').textContent = '';
+        } catch (e) {
+            console.error(e);
+            document.getElementById('status').textContent = 'Ошибка загрузки данных';
+        }
+    }
+
+    // === ИНИЦИАЛИЗАЦИЯ ===
+    loadData().then(() => {
+        renderAll();
+        // Автообновление каждые 10 секунд (для таймеров)
+        setInterval(() => {
+            if (document.getElementById('timers').classList.contains('active')) {
+                loadData().then(renderAll);
+            }
+        }, 10000);
+    });
+
+    // Экспорт функций в глобальную область (для onclick)
+    window.toggleTask = toggleTask;
+    window.resetTaskProgress = resetTaskProgress;
+    window.resetDailyTasks = resetDailyTasks;
+    window.toggleTimer = toggleTimer;
+    window.resetTimer = resetTimer;
+    window.moveTask = () => {}; // перемещение отключено (не сохраняется на сервере)
+</script>
+
+</body>
+</html>

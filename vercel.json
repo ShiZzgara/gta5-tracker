@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/rick", "destination": "/index.html" },
+    { "source": "/erik", "destination": "/index.html" },
+    { "source": "/rick/api/data", "destination": "/api/data" },
+    { "source": "/erik/api/data", "destination": "/api/data" }
+  ]
+}

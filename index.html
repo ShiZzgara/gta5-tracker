@@ -77,22 +77,21 @@
 </div>
 
 <script>
-    // Определяем текущего персонажа по URL
-    function getCharFromPath() {
-        const path = window.location.pathname;
-        if (path === '/rick') return 'rick';
-        if (path === '/erik') return 'erik';
+    // Получаем персонажа из URL-параметра ?char=...
+    function getCurrentChar() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const char = urlParams.get('char');
+        if (['rick', 'erik'].includes(char)) return char;
         return 'karl';
     }
 
-    // Генерируем URL для персонажа
-    function getUrlForChar(charId) {
-        if (charId === 'rick') return '/rick';
-        if (charId === 'erik') return '/erik';
-        return '/';
+    // Формируем URL с параметром
+    function getUrlWithChar(charId) {
+        if (charId === 'karl') return '/';
+        return `/?char=${charId}`;
     }
 
-    let currentChar = getCharFromPath();
+    let currentChar = getCurrentChar();
     let tasks = {};
     let timers = {};
     let clientTimers = {};
@@ -103,6 +102,17 @@
         erik: 'Эрик Баттербин'
     };
 
+    const TASKS = [ /* ... (ваш массив TASKS без изменений) ... */ ];
+
+    const TIMER_DEFS = [
+        { name: "Дрессировка", duration: 15 * 60 },
+        { name: "Почта", duration: 10 * 60 },
+        { name: "Реднеки", duration: 2 * 60 * 60 },
+        { name: "Кармит", duration: 2 * 60 * 60 },
+        { name: "Тир", duration: 90 * 60 }
+    ];
+
+    // Добавляем сюда ваш массив TASKS полностью:
     const TASKS = [
         { id: 1, name: "Лотерея", points: 2 },
         { id: 2, name: "Сайт", points: 2 },
@@ -146,25 +156,15 @@
         { id: 40, name: "Автосервис", points: 4, desc: "машину друга" }
     ];
 
-    const TIMER_DEFS = [
-        { name: "Дрессировка", duration: 15 * 60 },
-        { name: "Почта", duration: 10 * 60 },
-        { name: "Реднеки", duration: 2 * 60 * 60 },
-        { name: "Кармит", duration: 2 * 60 * 60 },
-        { name: "Тир", duration: 90 * 60 }
-    ];
+    // API всегда на /api/data
+    const API_URL = '/api/data';
 
-    // API URL меняется в зависимости от персонажа
-    function getApiUrl() {
-        return getUrlForChar(currentChar) + 'api/data';
-    }
-
+    // Передаём char в теле запроса
     async function callAPI(method, body = {}) {
-        const url = getApiUrl();
-        const res = await fetch(url, {
+        const res = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ method, ...body })
+            body: JSON.stringify({ method, char: currentChar, ...body })
         });
         if (!res.ok) throw new Error('Ошибка API');
         return await res.json();
@@ -172,8 +172,7 @@
 
     async function loadData() {
         try {
-            const url = getApiUrl();
-            const res = await fetch(url);
+            const res = await fetch(`${API_URL}?char=${currentChar}`);
             if (!res.ok) throw new Error('Ошибка загрузки');
             const data = await res.json();
             tasks = data.tasks || {};
@@ -220,6 +219,11 @@
         document.querySelectorAll('.char-tab').forEach(tab => {
             tab.classList.toggle('active', tab.dataset.char === currentChar);
         });
+        // Обновляем URL
+        const newUrl = getUrlWithChar(currentChar);
+        if (window.location.pathname + window.location.search !== newUrl + (newUrl === '/' ? '' : '')) {
+            window.history.replaceState(null, '', newUrl);
+        }
     }
 
     function renderTasks() {
@@ -289,11 +293,9 @@
         }
     }
 
-    // === НАВИГАЦИЯ МЕЖДУ ПЕРСОНАЖАМИ ===
     function switchToChar(charId) {
         if (charId === currentChar) return;
         currentChar = charId;
-        window.history.pushState(null, '', getUrlForChar(charId));
         loadData();
     }
 
@@ -339,7 +341,6 @@
         await loadData();
     }
 
-    // Обработчики кнопок
     document.querySelectorAll('.char-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             switchToChar(tab.dataset.char);
@@ -356,14 +357,12 @@
         });
     });
 
-    // Экспорт в глобальную область
     window.toggleTask = toggleTask;
     window.resetTaskProgress = resetTaskProgress;
     window.resetDailyTasks = resetDailyTasks;
     window.toggleTimer = toggleTimer;
     window.resetTimer = resetTimer;
 
-    // Инициализация
     loadData();
 </script>
 

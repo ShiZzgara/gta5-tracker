@@ -1,31 +1,19 @@
-// api/data.js — поддержка нескольких персонажей по пути
-
 let storage = {};
 
-// Инициализация персонажа
 function initChar(charId) {
     if (!storage[charId]) {
         storage[charId] = {
             tasks: {},
             timers: {}
         };
-        // Задания 1–40
         for (let i = 1; i <= 40; i++) {
             storage[charId].tasks[i] = { completed: false, count: 0 };
         }
-        // Таймеры
         const names = ["Дрессировка", "Почта", "Реднеки", "Кармит", "Тир"];
         names.forEach(name => {
             storage[charId].timers[name] = { active: false, startedAt: 0 };
         });
     }
-}
-
-// Определяем персонажа по URL-пути
-function getCharFromPath(path) {
-    if (path === '/rick') return 'rick';
-    if (path === '/erik') return 'erik';
-    return 'karl'; // по умолчанию
 }
 
 export default async function handler(req, res) {
@@ -39,8 +27,19 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Определяем персонажа по URL
-        const charId = getCharFromPath(req.url.split('?')[0]);
+        // Для GET: читаем из query
+        let charId = 'karl';
+        if (req.method === 'GET') {
+            const url = new URL(req.url, `https://${req.headers.host}`);
+            charId = url.searchParams.get('char') || 'karl';
+        } else {
+            // Для POST: читаем из тела
+            const body = req.body || {};
+            charId = body.char || 'karl';
+        }
+
+        if (!['karl', 'rick', 'erik'].includes(charId)) charId = 'karl';
+
         initChar(charId);
 
         if (req.method === 'GET') {

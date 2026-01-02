@@ -71,9 +71,50 @@
     const API_URL = '/api/data';
     let tasks = {};
     let timers = {};
-    let clientTimers = {}; // локальные интервалы
+    let clientTimers = {};
 
-    const TASKS = [ /* ... ваш массив TASKS ... */ ]; // ← ОСТАВЬТЕ СВОЙ МАССИВ ЗАДАНИЙ БЕЗ ИЗМЕНЕНИЙ
+    const TASKS = [
+        { id: 1, name: "Лотерея", points: 2 },
+        { id: 2, name: "Сайт", points: 2 },
+        { id: 3, name: "Бравл", points: 2 },
+        { id: 4, name: "Лайк в match", points: 2 },
+        { id: 5, name: "Кинуть мячик", points: 4, desc: "15 раз", max: 15, hasCount: true },
+        { id: 6, name: "Дрессировка", points: 4, max: 15, hasCount: true },
+        { id: 7, name: "Тир", points: 2 },
+        { id: 8, name: "Ставка в колесе", points: 6, desc: "100 фишек" },
+        { id: 9, name: "Рыбалка", points: 8, desc: "20 рыб" },
+        { id: 10, name: "Автосервис", points: 2, desc: "свою машину" },
+        { id: 11, name: "Армреслинг", points: 2 },
+        { id: 12, name: "Баскетбол", points: 2, desc: "2 мяча" },
+        { id: 13, name: "Футбол", points: 2, desc: "2 мяча" },
+        { id: 14, name: "Задания клуба", points: 8, max: 2, hasCount: true },
+        { id: 15, name: "Дартс", points: 2 },
+        { id: 16, name: "Волейбол", points: 2, desc: "1 минута" },
+        { id: 17, name: "Пинг-понг", points: 2, desc: "1 минута" },
+        { id: 18, name: "Теннис", points: 2, desc: "1 минута" },
+        { id: 19, name: "Сыграть в мафию", points: 6 },
+        { id: 20, name: "Платеж по лизингу", points: 2 },
+        { id: 21, name: "Гонка", points: 2, desc: "ставка 1000" },
+        { id: 22, name: "Арена", points: 2, max: 3, desc: "победа", hasCount: true },
+        { id: 23, name: "Стройка", points: 4, desc: "25 действий" },
+        { id: 24, name: "Порт", points: 4, desc: "25 действий" },
+        { id: 25, name: "Шахта", points: 4, desc: "25 действий" },
+        { id: 26, name: "Ферма", points: 2, desc: "10 действий" },
+        { id: 27, name: "Картинг", points: 2, desc: "победа" },
+        { id: 28, name: "Сокровище", points: 2 },
+        { id: 29, name: "Автобус", points: 4, max: 2, hasCount: true },
+        { id: 30, name: "Почта", points: 2, max: 10, hasCount: true },
+        { id: 31, name: "Нули в казино", points: 4 },
+        { id: 32, name: "Тренажерка", points: 2, desc: "20 действий" },
+        { id: 33, name: "Тренировочный комплекс", points: 2, max: 5, desc: "победы от 100$", hasCount: true },
+        { id: 34, name: "Шкуры", points: 4, max: 5, desc: "100 качество", hasCount: true },
+        { id: 35, name: "Пожарный", points: 2, max: 25, hasCount: true },
+        { id: 36, name: "Дальнобойщик", points: 4, max: 3, hasCount: true },
+        { id: 37, name: "Киностудия", points: 4 },
+        { id: 38, name: "Кинотеатр", points: 2, desc: "загрузить 5 роликов" },
+        { id: 39, name: "Метро", points: 4 },
+        { id: 40, name: "Автосервис", points: 4, desc: "машину друга" }
+    ];
 
     const TIMER_DEFS = [
         { name: "Дрессировка", duration: 15 * 60 },
@@ -103,16 +144,14 @@
             timers = data.timers || {};
             document.getElementById('status').textContent = '';
             renderAll();
-            startClientTimers(); // ← запускаем локальные таймеры
+            startClientTimers();
         } catch (e) {
             console.error(e);
             document.getElementById('status').textContent = 'Ошибка загрузки данных';
         }
     }
 
-    // === КЛИЕНТСКИЕ ТАЙМЕРЫ ===
     function startClientTimers() {
-        // Очищаем старые
         Object.values(clientTimers).forEach(id => clearInterval(id));
         clientTimers = {};
 
@@ -120,13 +159,12 @@
             const state = timers[tdef.name] || { active: false, startedAt: 0 };
             if (state.active && state.startedAt) {
                 clientTimers[tdef.name] = setInterval(() => {
-                    renderTimers(); // перерисовываем только таймеры
+                    renderTimers();
                 }, 1000);
             }
         });
     }
 
-    // === РЕНДЕР ===
     function formatTime(sec) {
         sec = Math.max(0, sec);
         return `${Math.floor(sec/60).toString().padStart(2,'0')}:${(sec%60).toString().padStart(2,'0')}`;
@@ -142,7 +180,30 @@
     }
 
     function renderTasks() {
-        // ... ваш существующий код renderTasks() без изменений ...
+        const container = document.querySelector('.tasks-container');
+        container.innerHTML = '';
+        TASKS.forEach(task => {
+            const state = tasks[task.id] || { completed: false, count: 0 };
+            const countText = task.hasCount ? ` (${state.count}/${task.max})` : '';
+            const descText = task.desc ? ` - ${task.desc}` : '';
+
+            const el = document.createElement('div');
+            el.className = 'task-item';
+            el.innerHTML = `
+                <div class="task-left">
+                    <input type="checkbox" class="task-checkbox" ${state.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <div class="task-info">
+                        <div class="task-name">${task.name}${countText}</div>
+                        ${descText ? `<div class="task-count">${descText}</div>` : ''}
+                    </div>
+                    <div class="task-points">+${task.points}</div>
+                </div>
+                <div class="task-controls">
+                    ${task.hasCount ? `<button class="reset-btn" onclick="resetTaskProgress(${task.id})" style="background:#ff6b6b;color:white;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;">↺</button>` : ''}
+                </div>
+            `;
+            container.appendChild(el);
+        });
     }
 
     function renderTimers() {
@@ -184,17 +245,31 @@
         }
     }
 
-    // === ОБРАБОТЧИКИ ===
     async function toggleTask(id) {
-        // ... ваш существующий код без изменений ...
+        const taskDef = TASKS.find(t => t.id === id);
+        const state = tasks[id] || { completed: false, count: 0 };
+        let newCompleted = !state.completed;
+        let newCount = state.count;
+
+        if (taskDef.hasCount) {
+            if (!state.completed) {
+                newCount++;
+                newCompleted = newCount >= taskDef.max;
+            }
+        }
+
+        await callAPI('updateTask', { taskId: id, completed: newCompleted, count: newCount });
+        await loadData();
     }
 
     async function resetTaskProgress(id) {
-        // ... ваш существующий код без изменений ...
+        await callAPI('updateTask', { taskId: id, completed: false, count: 0 });
+        await loadData();
     }
 
     async function resetDailyTasks() {
-        // ... ваш существующий код без изменений ...
+        await callAPI('resetTasks');
+        await loadData();
     }
 
     async function toggleTimer(name) {
@@ -204,7 +279,7 @@
         } else {
             await callAPI('startTimer', { timerName: name });
         }
-        await loadData(); // обновляем данные и перезапускаем клиентские таймеры
+        await loadData();
     }
 
     async function resetTimer(name) {
@@ -212,7 +287,6 @@
         await loadData();
     }
 
-    // === СОБЫТИЯ ===
     document.querySelectorAll('.screen-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.screen-tab').forEach(t => t.classList.remove('active'));
@@ -229,7 +303,6 @@
     window.toggleTimer = toggleTimer;
     window.resetTimer = resetTimer;
 
-    // === СТАРТ ===
     loadData();
 </script>
 

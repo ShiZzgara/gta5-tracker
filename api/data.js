@@ -1,17 +1,15 @@
-let storage = {};
+let storage = {
+    tasks: {},
+    timers: {}
+};
 
-function initChar(charId) {
-    if (!storage[charId]) {
-        storage[charId] = {
-            tasks: {},
-            timers: {}
-        };
+function init() {
+    if (Object.keys(storage.tasks).length === 0) {
         for (let i = 1; i <= 40; i++) {
-            storage[charId].tasks[i] = { completed: false, count: 0 };
+            storage.tasks[i] = { completed: false, count: 0 };
         }
-        const names = ["Дрессировка", "Почта", "Реднеки", "Кармит", "Тир"];
-        names.forEach(name => {
-            storage[charId].timers[name] = { active: false, startedAt: 0 };
+        ["Дрессировка", "Почта", "Реднеки", "Кармит", "Тир"].forEach(name => {
+            storage.timers[name] = { active: false, startedAt: 0 };
         });
     }
 }
@@ -27,23 +25,10 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Для GET: читаем из query
-        let charId = 'karl';
-        if (req.method === 'GET') {
-            const url = new URL(req.url, `https://${req.headers.host}`);
-            charId = url.searchParams.get('char') || 'karl';
-        } else {
-            // Для POST: читаем из тела
-            const body = req.body || {};
-            charId = body.char || 'karl';
-        }
-
-        if (!['karl', 'rick', 'erik'].includes(charId)) charId = 'karl';
-
-        initChar(charId);
+        init();
 
         if (req.method === 'GET') {
-            res.status(200).json(storage[charId]);
+            res.status(200).json(storage);
             return;
         }
 
@@ -54,35 +39,35 @@ export default async function handler(req, res) {
             switch (method) {
                 case 'updateTask': {
                     const { taskId, completed, count } = body;
-                    if (storage[charId].tasks[taskId] !== undefined) {
-                        storage[charId].tasks[taskId] = { completed, count };
+                    if (storage.tasks[taskId] !== undefined) {
+                        storage.tasks[taskId] = { completed, count };
                     }
                     break;
                 }
                 case 'resetTasks': {
                     for (let i = 1; i <= 40; i++) {
-                        storage[charId].tasks[i] = { completed: false, count: 0 };
+                        storage.tasks[i] = { completed: false, count: 0 };
                     }
                     break;
                 }
                 case 'startTimer': {
                     const { timerName } = body;
-                    if (storage[charId].timers[timerName] !== undefined) {
-                        storage[charId].timers[timerName] = { active: true, startedAt: Date.now() };
+                    if (storage.timers[timerName] !== undefined) {
+                        storage.timers[timerName] = { active: true, startedAt: Date.now() };
                     }
                     break;
                 }
                 case 'stopTimer': {
                     const { timerName } = body;
-                    if (storage[charId].timers[timerName] !== undefined) {
-                        storage[charId].timers[timerName].active = false;
+                    if (storage.timers[timerName] !== undefined) {
+                        storage.timers[timerName].active = false;
                     }
                     break;
                 }
                 case 'resetTimer': {
                     const { timerName } = body;
-                    if (storage[charId].timers[timerName] !== undefined) {
-                        storage[charId].timers[timerName] = { active: false, startedAt: 0 };
+                    if (storage.timers[timerName] !== undefined) {
+                        storage.timers[timerName] = { active: false, startedAt: 0 };
                     }
                     break;
                 }

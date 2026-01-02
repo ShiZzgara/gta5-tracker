@@ -8,6 +8,9 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 16px; background: #f0f2f5; color: #000; }
         .header { text-align: center; margin-bottom: 20px; }
+        .char-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; }
+        .char-tab { flex: 1; padding: 12px; background: #e0e0e0; border: none; border-radius: 12px; cursor: pointer; white-space: nowrap; font-size: 14px; }
+        .char-tab.active { background: #007AFF; color: white; }
         .screen-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
         .screen-tab { flex: 1; padding: 10px; background: #d0d0d0; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
         .screen-tab.active { background: #007AFF; color: white; }
@@ -38,7 +41,13 @@
 <body>
 
 <div class="header">
-    <h1>👤 Карл Урбан — Задания GTA 5 RP</h1>
+    <h1 id="char-title">Задания GTA 5 RP</h1>
+</div>
+
+<div class="char-tabs">
+    <button class="char-tab" data-char="karl">👤 Карл Урбан</button>
+    <button class="char-tab" data-char="rick">👤 Рик Стволовски</button>
+    <button class="char-tab" data-char="erik">👤 Эрик Баттербин</button>
 </div>
 
 <div class="screen-tabs">
@@ -68,10 +77,31 @@
 </div>
 
 <script>
-    const API_URL = '/api/data';
+    // Определяем текущего персонажа по URL
+    function getCharFromPath() {
+        const path = window.location.pathname;
+        if (path === '/rick') return 'rick';
+        if (path === '/erik') return 'erik';
+        return 'karl';
+    }
+
+    // Генерируем URL для персонажа
+    function getUrlForChar(charId) {
+        if (charId === 'rick') return '/rick';
+        if (charId === 'erik') return '/erik';
+        return '/';
+    }
+
+    let currentChar = getCharFromPath();
     let tasks = {};
     let timers = {};
     let clientTimers = {};
+
+    const CHAR_NAMES = {
+        karl: 'Карл Урбан',
+        rick: 'Рик Стволовски',
+        erik: 'Эрик Баттербин'
+    };
 
     const TASKS = [
         { id: 1, name: "Лотерея", points: 2 },
@@ -124,9 +154,14 @@
         { name: "Тир", duration: 90 * 60 }
     ];
 
-    // === API ===
+    // API URL меняется в зависимости от персонажа
+    function getApiUrl() {
+        return getUrlForChar(currentChar) + 'api/data';
+    }
+
     async function callAPI(method, body = {}) {
-        const res = await fetch(API_URL, {
+        const url = getApiUrl();
+        const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ method, ...body })
@@ -137,7 +172,8 @@
 
     async function loadData() {
         try {
-            const res = await fetch(API_URL);
+            const url = getApiUrl();
+            const res = await fetch(url);
             if (!res.ok) throw new Error('Ошибка загрузки');
             const data = await res.json();
             tasks = data.tasks || {};
@@ -177,6 +213,13 @@
             if (state.completed) total += t.points;
         });
         return total;
+    }
+
+    function renderUI() {
+        document.getElementById('char-title').innerText = `👤 ${CHAR_NAMES[currentChar]} — Задания GTA 5 RP`;
+        document.querySelectorAll('.char-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.dataset.char === currentChar);
+        });
     }
 
     function renderTasks() {
@@ -238,11 +281,20 @@
     }
 
     function renderAll() {
+        renderUI();
         renderTasks();
         renderTimers();
         if (document.getElementById('stats').classList.contains('active')) {
             renderStats();
         }
+    }
+
+    // === НАВИГАЦИЯ МЕЖДУ ПЕРСОНАЖАМИ ===
+    function switchToChar(charId) {
+        if (charId === currentChar) return;
+        currentChar = charId;
+        window.history.pushState(null, '', getUrlForChar(charId));
+        loadData();
     }
 
     async function toggleTask(id) {
@@ -287,6 +339,13 @@
         await loadData();
     }
 
+    // Обработчики кнопок
+    document.querySelectorAll('.char-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            switchToChar(tab.dataset.char);
+        });
+    });
+
     document.querySelectorAll('.screen-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.screen-tab').forEach(t => t.classList.remove('active'));
@@ -297,12 +356,14 @@
         });
     });
 
+    // Экспорт в глобальную область
     window.toggleTask = toggleTask;
     window.resetTaskProgress = resetTaskProgress;
     window.resetDailyTasks = resetDailyTasks;
     window.toggleTimer = toggleTimer;
     window.resetTimer = resetTimer;
 
+    // Инициализация
     loadData();
 </script>
 

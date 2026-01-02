@@ -5,230 +5,40 @@
     <title>Трекер заданий GTA 5 RP</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 16px;
-            background-color: #f0f2f5;
-            color: #000;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .char-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-        .char-tab {
-            flex: 1;
-            padding: 12px;
-            background-color: #e0e0e0;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            white-space: nowrap;
-            font-size: 14px;
-        }
-        .char-tab.active {
-            background-color: #007AFF;
-            color: white;
-        }
-        .screen-tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 20px;
-        }
-        .screen-tab {
-            flex: 1;
-            padding: 10px;
-            background-color: #d0d0d0;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .screen-tab.active {
-            background-color: #007AFF;
-            color: white;
-        }
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px;
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .task-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-        }
-        .task-checkbox {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-        }
-        .task-info {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-        .task-name {
-            font-weight: 500;
-        }
-        .task-count {
-            font-size: 12px;
-            color: #666;
-        }
-        .task-points {
-            font-weight: 600;
-            color: #007AFF;
-            margin-right: 10px;
-        }
-        .task-controls {
-            display: flex;
-            gap: 5px;
-        }
-        .move-btn {
-            background-color: #e0e0e0;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .reset-btn {
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .timer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px;
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .timer-name {
-            font-weight: 500;
-        }
-        .timer-display {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-        .timer-time {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .timer-progress {
-            width: 100px;
-            height: 6px;
-            background-color: #e0e0e0;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 5px;
-        }
-        .timer-progress-bar {
-            height: 100%;
-            background-color: #007AFF;
-            width: 0%;
-            transition: width 0.3s;
-        }
-        .btn-start {
-            background-color: #007AFF;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 5px;
-        }
-        .btn-reset {
-            background-color: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .stats-container {
-            padding: 16px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .total-points {
-            font-size: 18px;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-        .action-btn {
-            flex: 1;
-            padding: 12px;
-            background-color: #007AFF;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .status {
-            text-align: center;
-            margin: 10px 0;
-            font-size: 14px;
-            color: #666;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 16px; background: #f0f2f5; color: #000; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .screen-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+        .screen-tab { flex: 1; padding: 10px; background: #d0d0d0; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .screen-tab.active { background: #007AFF; color: white; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .task-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; background: white; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .task-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .task-checkbox { width: 24px; height: 24px; cursor: pointer; }
+        .task-info { display: flex; flex-direction: column; flex: 1; }
+        .task-name { font-weight: 500; }
+        .task-count { font-size: 12px; color: #666; }
+        .task-points { font-weight: 600; color: #007AFF; margin-right: 10px; }
+        .timer-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; background: white; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .timer-name { font-weight: 500; }
+        .timer-display { display: flex; flex-direction: column; align-items: flex-end; }
+        .timer-time { font-weight: 600; margin-bottom: 4px; }
+        .timer-progress { width: 100px; height: 6px; background: #e0e0e0; border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
+        .timer-progress-bar { height: 100%; background: #007AFF; width: 0%; transition: width 0.3s; }
+        .btn-start { background: #007AFF; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 5px; }
+        .btn-reset { background: #ff6b6b; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .stats-container { padding: 16px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .total-points { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 16px; }
+        .action-buttons { display: flex; gap: 10px; margin-top: 16px; }
+        .action-btn { flex: 1; padding: 12px; background: #007AFF; color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; }
+        .status { text-align: center; margin: 10px 0; font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>Задания GTA 5 RP</h1>
-</div>
-
-<div class="char-tabs">
-    <button class="char-tab active" data-char="karl">👤 Карл Урбан</button>
-    <button class="char-tab" data-char="rick">👤 Рик Стволовски</button>
-    <button class="char-tab" data-char="erik">👤 Эрик Баттербин</button>
+    <h1>👤 Карл Урбан — Задания GTA 5 RP</h1>
 </div>
 
 <div class="screen-tabs">
@@ -253,19 +63,15 @@
 <div id="stats" class="screen">
     <div class="stats-container">
         <div class="total-points">📊 Статистика</div>
+        <div id="points-display"></div>
     </div>
 </div>
 
 <script>
     const API_URL = '/api/data';
-    let currentChar = 'karl';
-    let allData = {
-        karl: { tasks: {}, timers: {} },
-        rick: { tasks: {}, timers: {} },
-        erik: { tasks: {}, timers: {} }
-    };
+    let tasks = {};
+    let timers = {};
 
-    // Шаблоны (для отображения, не для хранения)
     const TASKS = [
         { id: 1, name: "Лотерея", points: 2 },
         { id: 2, name: "Сайт", points: 2 },
@@ -309,7 +115,7 @@
         { id: 40, name: "Автосервис", points: 4, desc: "машину друга" }
     ];
 
-    const TIMERS = [
+    const TIMER_DEFS = [
         { name: "Дрессировка", duration: 15 * 60 },
         { name: "Почта", duration: 10 * 60 },
         { name: "Реднеки", duration: 2 * 60 * 60 },
@@ -317,52 +123,51 @@
         { name: "Тир", duration: 90 * 60 }
     ];
 
-    // === ФУНКЦИИ ===
+    // === API ===
     async function callAPI(method, body = {}) {
         const res = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ method, char: currentChar, ...body })
+            body: JSON.stringify({ method, ...body })
         });
-        if (!res.ok) throw new Error('API error');
+        if (!res.ok) throw new Error('Ошибка API');
         return await res.json();
     }
 
     async function loadData() {
         try {
-            const res = await fetch(`${API_URL}?char=${currentChar}`);
-            if (!res.ok) throw new Error('Load error');
+            const res = await fetch(API_URL);
+            if (!res.ok) throw new Error('Ошибка загрузки');
             const data = await res.json();
-            // ВАЖНО: сохраняем данные для всех персонажей
-            allData = data;
+            tasks = data.tasks || {};
+            timers = data.timers || {};
             document.getElementById('status').textContent = '';
+            renderAll();
         } catch (e) {
             console.error(e);
             document.getElementById('status').textContent = 'Ошибка загрузки данных';
         }
     }
 
+    // === РЕНДЕР ===
     function formatTime(sec) {
         sec = Math.max(0, sec);
         return `${Math.floor(sec/60).toString().padStart(2,'0')}:${(sec%60).toString().padStart(2,'0')}`;
     }
 
-    function getPoints(charId) {
+    function getPoints() {
         let total = 0;
         TASKS.forEach(t => {
-            const state = allData[charId]?.tasks?.[t.id] || {};
+            const state = tasks[t.id] || {};
             if (state.completed) total += t.points;
         });
         return total;
     }
 
-    // === РЕНДЕР ===
     function renderTasks() {
         const container = document.querySelector('.tasks-container');
-        const tasks = allData[currentChar]?.tasks || {};
         container.innerHTML = '';
-
-        TASKS.forEach((task, idx) => {
+        TASKS.forEach(task => {
             const state = tasks[task.id] || { completed: false, count: 0 };
             const countText = task.hasCount ? ` (${state.count}/${task.max})` : '';
             const descText = task.desc ? ` - ${task.desc}` : '';
@@ -379,9 +184,7 @@
                     <div class="task-points">+${task.points}</div>
                 </div>
                 <div class="task-controls">
-                    ${task.hasCount ? `<button class="reset-btn" onclick="resetTaskProgress(${task.id})">↺</button>` : ''}
-                    <button class="move-btn" disabled>↑</button>
-                    <button class="move-btn" disabled>↓</button>
+                    ${task.hasCount ? `<button class="reset-btn" onclick="resetTaskProgress(${task.id})" style="background:#ff6b6b;color:white;border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;">↺</button>` : ''}
                 </div>
             `;
             container.appendChild(el);
@@ -390,10 +193,8 @@
 
     function renderTimers() {
         const container = document.querySelector('.timers-container');
-        const timers = allData[currentChar]?.timers || {};
         container.innerHTML = '';
-
-        TIMERS.forEach(tdef => {
+        TIMER_DEFS.forEach(tdef => {
             const state = timers[tdef.name] || { active: false, startedAt: 0 };
             const now = Date.now();
             const elapsed = state.startedAt ? Math.floor((now - state.startedAt) / 1000) : 0;
@@ -418,13 +219,7 @@
     }
 
     function renderStats() {
-        const container = document.querySelector('.stats-container');
-        container.innerHTML = '<div class="total-points">📊 Статистика</div>';
-        ['karl','rick','erik'].forEach(id => {
-            const name = ({karl:'Карл Урбан', rick:'Рик Стволовски', erik:'Эрик Баттербин'})[id];
-            const points = getPoints(id);
-            container.innerHTML += `<div style="padding:12px 0;border-bottom:1px solid #eee;"><strong>${name}:</strong> ${points} очков</div>`;
-        });
+        document.getElementById('points-display').innerText = `Очки: ${getPoints()}`;
     }
 
     function renderAll() {
@@ -437,64 +232,48 @@
 
     // === ОБРАБОТЧИКИ ===
     async function toggleTask(id) {
-        const task = TASKS.find(t => t.id === id);
-        const state = allData[currentChar]?.tasks?.[id] || { completed: false, count: 0 };
+        const taskDef = TASKS.find(t => t.id === id);
+        const state = tasks[id] || { completed: false, count: 0 };
         let newCompleted = !state.completed;
         let newCount = state.count;
 
-        if (task.hasCount) {
+        if (taskDef.hasCount) {
             if (!state.completed) {
                 newCount++;
-                if (newCount >= task.max) newCompleted = true;
-                else newCompleted = false;
+                newCompleted = newCount >= taskDef.max;
             }
         }
 
         await callAPI('updateTask', { taskId: id, completed: newCompleted, count: newCount });
         await loadData();
-        renderAll();
     }
 
     async function resetTaskProgress(id) {
         await callAPI('updateTask', { taskId: id, completed: false, count: 0 });
         await loadData();
-        renderAll();
     }
 
     async function resetDailyTasks() {
         await callAPI('resetTasks');
         await loadData();
-        renderAll();
     }
 
     async function toggleTimer(name) {
-        const timers = allData[currentChar]?.timers || {};
-        const isActive = timers[name]?.active || false;
-        if (isActive) {
+        const state = timers[name] || { active: false };
+        if (state.active) {
             await callAPI('stopTimer', { timerName: name });
         } else {
             await callAPI('startTimer', { timerName: name });
         }
         await loadData();
-        renderAll();
     }
 
     async function resetTimer(name) {
         await callAPI('resetTimer', { timerName: name });
         await loadData();
-        renderAll();
     }
 
     // === СОБЫТИЯ ===
-    document.querySelectorAll('.char-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.char-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            currentChar = tab.dataset.char;
-            renderAll();
-        });
-    });
-
     document.querySelectorAll('.screen-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.screen-tab').forEach(t => t.classList.remove('active'));
@@ -505,22 +284,15 @@
         });
     });
 
-    // === ЭКСПОРТ ===
     window.toggleTask = toggleTask;
     window.resetTaskProgress = resetTaskProgress;
     window.resetDailyTasks = resetDailyTasks;
     window.toggleTimer = toggleTimer;
     window.resetTimer = resetTimer;
 
-    // === ИНИЦИАЛИЗАЦИЯ ===
-    loadData().then(() => {
-        renderAll();
-        setInterval(() => {
-            if (document.getElementById('timers').classList.contains('active')) {
-                loadData().then(renderAll);
-            }
-        }, 10000);
-    });
+    // === СТАРТ ===
+    loadData();
+    setInterval(loadData, 10000); // автообновление
 </script>
 
 </body>
